@@ -1,0 +1,211 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+
+import searchStore from '@/store/search'
+import { registerStore } from './router_helper'
+
+Vue.use(Router)
+
+export default new Router({
+	mode: 'history',
+	base: process.env.BASE_URL,
+	redirect: '/home',
+	routes: [
+		{
+			path: '/home',
+			name: 'Home',
+			component: () => import('@/views/Home.vue')
+		},
+		{
+			path: '/profile',
+			name: 'Profile',
+			component: () => import('@/views/Profile.vue'),
+			redirect: '/profile/info',
+			children: [
+				{
+					path: 'group',
+					name: 'Group',
+					component: () => import('@/components/vet/Group.vue'),
+				},
+				{
+					path: 'info',
+					name: 'Personal Info',
+					component: () => import('@/components/user/PersonalInfo.vue'),
+				},
+				{
+					path: 'certificates',
+					name: 'Certificates & Documents',
+					component: () => import('@/components/vet/Documents.vue'),
+				},
+				{
+					path: 'specialties',
+					name: 'Specialties',
+					component: () => import('@/components/vet/Specialties.vue'),
+				},
+				{
+					path: 'services',
+					name: 'Services',
+					component: () => import('@/components/vet/Services.vue')
+				},
+				{
+					path: 'promos',
+					name: 'Promos',
+					component: () => import('@/components/vet/Promos.vue')
+				},
+				{
+					path: 'appointments',
+					name: 'Appointments',
+					component: () => import('@/components/vet/Appointments.vue'),
+				},
+				{
+					path: 'messages',
+					name: 'Messages',
+					component: () => import('@/components/user/Messages.vue'),
+				},
+				{
+					path: 'pets',
+					name: 'Pets',
+					component: () => import('@/components/pet_owner/Pets.vue'),
+				},
+				{
+					path: 'calendar',
+					name: 'Calendar',
+					component: () => import('@/components/pet_owner/Calendar.vue'),
+				},
+				{
+					path: 'posts',
+					name: 'Posts',
+					component: () => import('@/components/pet_owner/Posts.vue'),
+				},
+				{
+					path: 'vet',
+					name: 'Find Vet',
+					component: () => import('@/components/pet_owner/FindVet.vue'),
+					redirect: 'vet/search',
+					beforeEnter (routeTo, routeFrom, next) {
+						registerStore('$_search', searchStore)
+						next()
+					},
+					children: [
+						{
+							path: 'search',
+							name: 'Search Vet',
+							component: () => import('@/components/pet_owner/vet/Search.vue'),
+						},
+						{
+							path: 'profile/:vetId',
+							name: 'Vet Profile',
+							component: () => import('@/components/vet/Profile.vue'),
+							redirect: 'profile/:vetId/group',
+							children: [
+								{
+									path: 'group',
+									name: 'Vet Group',
+									component: () => import('@/components/vet/Group.vue')
+								},
+								{
+									path: 'services',
+									name: 'Vet Services',
+									component: () => import('@/components/vet/Services.vue')
+								},
+								{
+									path: 'promos',
+									name: 'Vet Promos',
+									component: () => import('@/components/vet/Promos.vue')
+								},
+								{
+									path: 'certificates',
+									name: 'Vet Certificates',
+									component: () => import('@/components/vet/Certificates.vue')
+								},
+								{
+									path: 'reviews',
+									name: 'Vet Reviews',
+									component: () => import('@/components/vet/Reviews.vue')
+								}
+							]
+						},
+						{
+							path: 'list',
+							name: 'Veterinarians',
+							component: () => import('@/components/vet/List.vue'),
+						}
+					]
+				},
+				{
+					path: 'pet-owner',
+					name: 'PetOwners',
+					component: () => import('@/components/pet_owner/PetOwners.vue'),
+					redirect: 'pet-owner/list',
+					children: [
+						{
+							path: 'list',
+							name: 'Pet Owners',
+							component: () => import('@/components/pet_owner/List.vue'),
+						},
+						{
+							path: 'profile/:petOwnerId',
+							name: 'Pet Owner Profile',
+							component: () => import('@/components/pet_owner/Profile.vue'),
+							redirect: 'profile/:petOwnerId/group',
+								children: [
+									{
+										path: 'pets',
+										name: 'Pet Owner Pets',
+										component: () => import('@/components/pet_owner/Pets.vue'),
+									},
+									{
+										path: 'group',
+										name: 'Pet Owner Group',
+										component: () => import('@/components/vet/Group.vue')
+									}
+								]
+						}
+					]
+				},
+				{
+					path: 'transactions',
+					name: 'Transactions',
+					component: () => import('@/components/vet/Appointments.vue'),
+				},
+				{
+					path: 'manage-registration',
+					name: 'Manage Registration',
+					component: () => import('@/components/vet/Registration.vue'),
+				},
+				{
+					path: 'users',
+					name: 'Admin Users',
+					component: () => import('@/components/user/List.vue'),
+				},
+				{
+					path: 'accounts',
+					name: 'Accounts',
+					component: () => import('@/components/user/Accounts.vue'),
+				}
+			]
+		},
+		{
+			path: '/contact-us',
+			name: 'Contact Us',
+			component: () => import('@/views/ContactUs.vue')
+		},
+		{
+			path: '/sign',
+			name: 'Auth',
+			component: () => import('@/views/Auth.vue'),
+			children: [
+				{
+					path: 'in',
+					name: 'Sign In',
+					component: () => import('@/components/auth/SignIn.vue'),
+				},
+				{
+					path: 'up',
+					name: 'Sign Up',
+					component: () => import('@/components/auth/SignUp.vue'),
+				}
+			]
+		}
+	]
+})

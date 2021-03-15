@@ -1,0 +1,79 @@
+<template>
+    <v-layout row justify-center>
+        <v-dialog v-model="showModal" scrollable max-width="600px">
+            <v-card>
+                <v-card-title class="text-uppercase font-weight-bold info white--text">
+                    Edit Name
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text style="max-height: 320px;">
+                    <v-form>
+                        <v-text-field 
+                            label="First Name"
+                            v-model="update.first_name"
+                        ></v-text-field>
+                        <v-text-field 
+                            label="Last Name"
+                            v-model="update.last_name"
+                        ></v-text-field>
+                        <p class="red--text" v-if="error" v-html="error"></p>
+                    </v-form>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" flat @click="showModal = false">Cancel</v-btn>
+                    <v-btn color="success" @click="submit">Save</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-layout>
+</template>
+
+<script>
+import { objectToformData } from '@/helpers/form_data_helper'
+export default {
+    data () {
+        return {
+            showModal: false,
+            update: {
+                first_name: '',
+                last_name: 0
+            },
+            error: null
+        }
+    },
+    methods: {
+        submit () {
+            if (!this.update.first_name || !this.update.last_name) {
+                this.error = 'Please fill in the fields'
+                return
+            }
+            
+            this.$store.dispatch('SHOW_LOADING')
+            this.error = null
+
+            let url = this.$baseUrl + '/Users/update_name'
+            let data = objectToformData(this.update)
+
+            this.$store.dispatch('API_POST', { url, data }, { root: true })
+                .then(response => {
+                    this.reset()
+                    this.$store.dispatch('CHECK_SESSION', this.$baseUrl)                    
+                    this.$store.dispatch('SHOW_SUCCESS', response.message)
+                })
+                .catch( error => { this.error = error })
+                .finally(() => this.$store.dispatch('CLOSE_LOADING'))
+        },
+        reset () {
+            this.error = null
+            this.update.first_name = this.$store.getters.USER_DATA.first_name
+            this.update.last_name = this.$store.getters.USER_DATA.last_name
+            this.showModal = false
+        }
+    }
+}
+</script>
+
+<style>
+
+</style>
