@@ -1,4 +1,7 @@
-# ui
+# Find Your Vet PH
+```
+An online booking appointment system where pet owners can book a veterinarian.
+```
 
 ## Project setup
 ```
